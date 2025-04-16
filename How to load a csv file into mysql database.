@@ -1,0 +1,76 @@
+# First and foremost lets say if you have a data in .xlsx extension then first convert it to csv format.
+# Now place your csv file in the inside MySQL's data directory (safe bet): C:\ProgramData\MySQL\MySQL Server 8.0\Uploads
+If you don't have an uploads folder then create one there.
+# Alternatively you can also place your file in C:\ProgramData\MySQL\MySQL Server 8.0\Data directory as well
+# If you are not sure of the path then run the following command below
+
+SHOW VARIABLES LIKE 'datadir';
+
+# It will return something like 
++---------------+-----------------------------------------+
+| Variable_name | Value                                   |
++---------------+-----------------------------------------+
+| datadir       | C:\ProgramData\MySQL\MySQL Server 8.0\Data\ |
++---------------+-----------------------------------------+
+
+# Execute this line
+
+SHOW VARIABLES LIKE 'secure_file_priv'
+
+#If this is showing null then its ok, but if not then you'll need to edit the MySQL config file (my.ini) and restart the MySQL service. 
+For that do the following:
+
+'''
+Step 1: Locate your MySQL configuration file (my.ini or my.cnf)
+On Windows, it's usually at:
+
+C:\ProgramData\MySQL\MySQL Server 8.0\my.ini
+You can confirm the config file location by running this in MySQL:
+
+SHOW VARIABLES LIKE 'pid_file';
+Then use the folder path (e.g., C:\ProgramData\MySQL\MySQL Server 8.0) to locate the config file.
+Step 2
+Open my.ini in Notepad as Administrator.
+
+Find the [mysqld] section.
+
+Look for this line (or add it if it’s not there):
+
+secure_file_priv=""
+
+This sets secure_file_priv = NULL (i.e., unrestricted).
+
+If it’s currently set like:
+
+secure_file_priv="C:/ProgramData/MySQL/MySQL Server 8.0/Uploads"
+
+— just change it to:
+
+secure_file_priv=""
+
+Step 3: Restart MySQL Service
+After saving the file:
+
+Press Win + R, type services.msc, hit Enter.
+
+Find MySQL (e.g., MySQL80).
+Right-click → Restart.
+'''
+
+# Now again run SHOW VARIABLES LIKE 'secure_file_priv' it should show null
+
+# After this execute this code to load the data to a table in a database
+
+USE [your database name]
+
+LOAD DATA INFILE '[file path]'
+INTO TABLE [your table name]
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+
+
+
+
